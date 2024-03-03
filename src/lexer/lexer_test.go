@@ -2,6 +2,7 @@ package lexer
 
 import (
 	"monkey/token"
+	"monkey/types"
 	"testing"
 )
 
@@ -14,6 +15,7 @@ let add = fn(x, y) {
 let result = add(five, ten);
 !-/*5;
 5 < 10 > 5;
+let 🌌 = "안녕하세요";
 `
 
 	tests := []struct {
@@ -68,22 +70,27 @@ let result = add(five, ten);
 		{token.GREATER, ">"},
 		{token.INT, "5"},
 		{token.SEMICOLON, ";"},
+		{token.LET, "let"},
+		{token.IDENT, "🌌"},
+		{token.ASSIGN, "="},
+		{token.STRING, "안녕하세요"},
+		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}
 
-	l := New(input)
+	l := New(types.InputString(input))
 
 	for i, tt := range tests {
 		tok := l.NextToken()
 
 		if tok.Type != tt.expectedType {
 			t.Fatalf("tests[%d] - tokentype wrong. expected=[%q, %q] got=[%q, %q]",
-				i, tt.expectedType, tt.expectedLiteral, tok.Type, tok.Literal)
+				i, tt.expectedType, tt.expectedLiteral, tok.Type, string(tok.Literal))
 		}
 
-		if tok.Literal != tt.expectedLiteral {
+		if string(tok.Literal) != tt.expectedLiteral {
 			t.Fatalf("tests[%d] - literal wrong. expected=[%q, %q] got=[%q, %q]",
-				i, tt.expectedType, tt.expectedLiteral, tok.Type, tok.Literal)
+				i, tt.expectedType, tt.expectedLiteral, tok.Type, string(tok.Literal))
 		}
 	}
 }

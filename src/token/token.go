@@ -1,10 +1,14 @@
 package token
 
+import (
+	"monkey/types"
+)
+
 type TokenType string
 
 type Token struct {
 	Type    TokenType
-	Literal string
+	Literal types.InputString
 }
 
 const (
@@ -45,6 +49,8 @@ const (
 
 	FUNCTION = "FUNCTION"
 	LET      = "LET"
+
+	STRING = "STRING"
 )
 
 var keywords = map[string]TokenType{
@@ -57,8 +63,8 @@ var keywords = map[string]TokenType{
 	"return": RETURN,
 }
 
-func LookupIdent(ident string) TokenType {
-	if tok, ok := keywords[ident]; ok {
+func LookupIdent(ident types.InputString) TokenType {
+	if tok, ok := keywords[string(ident)]; ok {
 		return tok
 	}
 	return IDENT
