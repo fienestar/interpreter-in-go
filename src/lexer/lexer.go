@@ -10,9 +10,15 @@ func (l *Lexer) NextToken() token.Token {
 
 	l.skipWhitespace()
 
-	switch l.ch { // TODO: ==, !=, >=, <=
+	switch l.ch {
 	case '=':
-		tok = newToken(token.ASSIGN, l.ch)
+		if l.peekChar() == '=' {
+			literal := [2]rune{l.ch, l.peekChar()}
+			l.readChar()
+			tok = token.Token{Type: token.EQ, Literal: literal[:]}
+		} else {
+			tok = newToken(token.ASSIGN, l.ch)
+		}
 	case ';':
 		tok = newToken(token.SEMICOLON, l.ch)
 	case '(':
@@ -30,11 +36,29 @@ func (l *Lexer) NextToken() token.Token {
 	case '*':
 		tok = newToken(token.MUL, l.ch)
 	case '!':
-		tok = newToken(token.LOGICAL_NOT, l.ch)
+		if l.peekChar() == '=' {
+			literal := [2]rune{l.ch, l.peekChar()}
+			l.readChar()
+			tok = token.Token{Type: token.NOT_EQ, Literal: literal[:]}
+		} else {
+			tok = newToken(token.LOGICAL_NOT, l.ch)
+		}
 	case '>':
-		tok = newToken(token.GREATER, l.ch)
+		if l.peekChar() == '=' {
+			literal := [2]rune{l.ch, l.peekChar()}
+			l.readChar()
+			tok = token.Token{Type: token.GREATER_EQ, Literal: literal[:]}
+		} else {
+			tok = newToken(token.GREATER, l.ch)
+		}
 	case '<':
-		tok = newToken(token.LESS, l.ch)
+		if l.peekChar() == '=' {
+			literal := [2]rune{l.ch, l.peekChar()}
+			l.readChar()
+			tok = token.Token{Type: token.LESS_EQ, Literal: literal[:]}
+		} else {
+			tok = newToken(token.LESS, l.ch)
+		}
 	case '{':
 		tok = newToken(token.LBRACE, l.ch)
 	case '}':
@@ -132,12 +156,16 @@ func New(input types.InputString) *Lexer {
 	return l
 }
 
-func (l *Lexer) readChar() {
+func (l *Lexer) peekChar() types.InputChar {
 	if l.readPosition >= len(l.input) {
-		l.ch = 0
+		return 0
 	} else {
-		l.ch = l.input[l.readPosition]
+		return l.input[l.readPosition]
 	}
+}
+
+func (l *Lexer) readChar() {
+	l.ch = l.peekChar()
 	l.position = l.readPosition
 	l.readPosition += 1
 }
