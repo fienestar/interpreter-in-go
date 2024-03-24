@@ -58,6 +58,8 @@ func (p *Parser) parseStatement() ast.Statement {
 	case token.RETURN:
 		return p.parseReturnStatement()
 	default:
+		msg := "unexpected token type " + p.curToken.Type
+		p.errors = append(p.errors, string(msg))
 		return nil
 	}
 }
