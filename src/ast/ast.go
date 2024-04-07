@@ -124,3 +124,14 @@ func (il *IntegerLiteral) TokenLiteral() types.InputString { return il.Token.Lit
 func (il *IntegerLiteral) String() string {
 	return string(il.Token.Literal)
 }
+
+type StringLiteral struct {
+	Token token.Token
+	Value string
+}
+
+func (il *StringLiteral) expressionNode()                 {}
+func (il *StringLiteral) TokenLiteral() types.InputString { return il.Token.Literal }
+func (il *StringLiteral) String() string {
+	return string(il.Token.Literal)
+}
